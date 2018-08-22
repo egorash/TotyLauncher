@@ -7,6 +7,7 @@ dependencies:
 
   cupertino_icons: ^0.1.0
   launcher_assist: ^1.0.4
+  path_provider: ^0.4.1
 
 dev_dependencies:
   flutter_test:
