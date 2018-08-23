@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class AppPicker extends StatefulWidget {
-    final List<dynamic> userApps; 
+    final userApps; 
     final Map<String, String> currentApps;   
     AppPicker({Key key, @required this.userApps, this.currentApps}) : super(key: key);
     @override
@@ -20,7 +20,7 @@ class AppPickerState extends State<AppPicker> {
 
   void loadData() {
     allUserApps = [];
-    for (var entry in widget.userApps) {
+    for (var entry in widget.userApps) {      
       allUserApps.add(new DropdownMenuItem(child: new Text(entry["label"]), value: entry["package"]));
     }
   }

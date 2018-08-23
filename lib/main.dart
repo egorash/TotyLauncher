@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:launcher_assist/launcher_assist.dart';
 import 'package:toty/Widgets/app_picker.dart';
 import 'package:toty/Widgets/tile.dart';
+import 'package:toty/utils/app_listing_service.dart';
 import 'package:toty/utils/preference_loading_service.dart';
 
 void main() => runApp(new TotyLauncher());
@@ -19,35 +20,22 @@ class TotyLauncherState extends State<TotyLauncher> {
       "Web Browser":"com.android.chrome"
     };
 
-    var exampleApps = {
-      "Evernote": "com.evernote",
-      "Trello" : "com.trello",
-      "WhatsApp": "com.whatsapp",
-      "GCal": "com.google.android.calendar", 
-      "Gmail": "com.google.android.gm"
-    };
-
     var show_launcher_settings = false;
-    var apps;
-    var widgets;
-    var userApps;
+    var allApps;
+    Map<String, String> userApps = Map<String, String>();
     var userWallpaper;
 
     @override
     Widget build(BuildContext context) {
-        if(apps != null) {
-            return new MaterialApp(
-              theme: ThemeData(
-                brightness: Brightness.dark,
-                primaryColor: Colors.black,
-                accentColor: Colors.white,
-              ),
-              debugShowCheckedModeBanner: false,              
-              home: home(),
-            );
-        } else {       
-            return new Center();
-        }
+          return new MaterialApp(
+            theme: ThemeData(
+              brightness: Brightness.dark,
+              primaryColor: Colors.black,
+              accentColor: Colors.white,
+            ),
+            debugShowCheckedModeBanner: false,              
+            home: home(),
+          );
     }
 
     @override
@@ -57,26 +45,30 @@ class TotyLauncherState extends State<TotyLauncher> {
         ]);
 
         PreferenceLoader().readApps().then((apps) {
-          LinkedHashMap<String, String> loadedApps;
-          apps.split("\\n").forEach( (splitLine) {
-            var mapEntry = splitLine.split(":");
+          Map<String, String> loadedApps;
+          for (var entry in apps.split("\\n")) {
+            var mapEntry = entry.split(":");
             var key = mapEntry[0];
             var value = mapEntry[1];
-            loadedApps[key] = value;          
+            userApps[key] = value;
+          }
+          setState(() {
+            if (userApps == null || userApps.length == 0) {
+              userApps = fallbackAppList;
+            }
           });
-
-            setState(() {
-                userApps = loadedApps;
-            });
         });
 
         loadNativeStuff();        
     }
 
     void loadNativeStuff() {
-        LauncherAssist.getAllApps().then((_appDetails) {
+      AppListingService.getApps().then((_appDetails) {
+        print("================================================");
+        print("NATIVE CALLED: $_appDetails");
+        print("================================================");
           setState(() {
-              apps = _appDetails;
+              allApps = _appDetails;
           });
         });
         LauncherAssist.getWallpaper().then((_imageData) {
@@ -88,8 +80,8 @@ class TotyLauncherState extends State<TotyLauncher> {
 
   Widget appRows() {
     var tiles = <Widget>[];
-    if (apps != null) {  
-      exampleApps.forEach((key, value) {
+    if (userApps != null) {  
+      userApps.forEach((key, value) {
         tiles.add(
           Tile(
           title: key, 
@@ -148,7 +140,7 @@ class TotyLauncherState extends State<TotyLauncher> {
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[
-        show_launcher_settings ? AppPicker(currentApps: exampleApps, userApps: apps) : appRows(),
+        show_launcher_settings ? AppPicker(currentApps: userApps, userApps: allApps) : appRows(),
         settingsTiles()
       ]      
     );
