@@ -122,6 +122,9 @@ class TotyLauncherState extends State<TotyLauncher> {
       title: show_launcher_settings ? "Back" : "App Settings", 
       function: () {
         setState(() {
+          if (show_launcher_settings) {
+            PreferenceLoader().writeAllApps(userApps);
+          }
           show_launcher_settings = !show_launcher_settings;    
         });
     }));
@@ -145,7 +148,7 @@ class TotyLauncherState extends State<TotyLauncher> {
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[
-        show_launcher_settings ? AppPicker() : appRows(),
+        show_launcher_settings ? AppPicker(currentApps: exampleApps, userApps: apps) : appRows(),
         settingsTiles()
       ]      
     );
