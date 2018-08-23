@@ -39,8 +39,8 @@ class TotyLauncherState extends State<TotyLauncher> {
             return new MaterialApp(
               theme: ThemeData(
                 brightness: Brightness.dark,
-                primaryColor: Colors.lightBlue[800],
-                accentColor: Colors.cyan[600],
+                primaryColor: Colors.black,
+                accentColor: Colors.white,
               ),
               debugShowCheckedModeBanner: false,              
               home: home(),
