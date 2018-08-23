@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:launcher_assist/launcher_assist.dart';
 import 'package:toty/Widgets/app_picker.dart';
 import 'package:toty/Widgets/tile.dart';
+import 'package:toty/models/App.dart';
 import 'package:toty/utils/app_listing_service.dart';
 import 'package:toty/utils/preference_loading_service.dart';
 
@@ -16,13 +17,16 @@ class TotyLauncher extends StatefulWidget {
 }
 
 class TotyLauncherState extends State<TotyLauncher> {
-    var fallbackAppList = {
-      "Web Browser":"com.android.chrome"
-    };
+    var fallbackAppList = [
+      new App(
+        title:"Web Browser",
+        launcherString:"com.android.chrome"
+      )
+    ];
 
     var show_launcher_settings = false;
     var allApps;
-    Map<String, String> userApps = Map<String, String>();
+    List<App> currentlySelectedApps = [];
     var userWallpaper;
 
     @override
@@ -50,11 +54,11 @@ class TotyLauncherState extends State<TotyLauncher> {
             var mapEntry = entry.split(":");
             var key = mapEntry[0];
             var value = mapEntry[1];
-            userApps[key] = value;
+            currentlySelectedApps.add(new App(title: key, launcherString: value));
           }
           setState(() {
-            if (userApps == null || userApps.length == 0) {
-              userApps = fallbackAppList;
+            if (currentlySelectedApps == null || currentlySelectedApps.length < 0) {
+              currentlySelectedApps = fallbackAppList;
             }
           });
         });
@@ -80,22 +84,21 @@ class TotyLauncherState extends State<TotyLauncher> {
 
   Widget appRows() {
     var tiles = <Widget>[];
-    if (userApps != null) {  
-      userApps.forEach((key, value) {
+    if (currentlySelectedApps != null) {
+      for (var app in currentlySelectedApps) {
         tiles.add(
           Tile(
-          title: key, 
+          title: app.title, 
           scale: 2.0,
           function: () {
             setState(() {
-              launchApp(value);    
+              launchApp(app.launcherString);    
             });
         }));           
       tiles.add(SizedBox(
         height: 20.0,    
-      ));      
-    });
-
+      ));    
+      }  
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisSize: MainAxisSize.max,
@@ -111,11 +114,11 @@ class TotyLauncherState extends State<TotyLauncher> {
     var tiles = <Widget>[];
 
     tiles.add(Tile(
-      title: show_launcher_settings ? "Back" : "App Settings", 
+      title: show_launcher_settings ? "Save and Exit" : "App Settings", 
       function: () {
         setState(() {
           if (show_launcher_settings) {
-            PreferenceLoader().writeAllApps(userApps);
+            PreferenceLoader().writeAllApps(currentlySelectedApps);
           }
           show_launcher_settings = !show_launcher_settings;    
         });
@@ -140,7 +143,7 @@ class TotyLauncherState extends State<TotyLauncher> {
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[
-        show_launcher_settings ? AppPicker(currentApps: userApps, userApps: allApps) : appRows(),
+        show_launcher_settings ? AppPicker(allUserApps:allApps, currentSelectedApps: currentlySelectedApps) : appRows(),
         settingsTiles()
       ]      
     );

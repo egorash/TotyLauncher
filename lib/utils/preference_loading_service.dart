@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+import 'package:toty/models/App.dart';
 
 class PreferenceLoader {
   Future<String> get _localPath async {
@@ -15,11 +16,13 @@ class PreferenceLoader {
     return File('$path/apps.txt');
   }
 
-  Future<bool> writeAllApps(Map<String, String> apps) async { 
+  Future<bool> writeAllApps(List<App> apps) async { 
     var file = await _localFile;
     var sink = file.openWrite();
 
-    apps.forEach((key, value) {
+    apps.forEach((entry) {
+      var key = entry.title;
+      var value = entry.launcherString;
       sink.writeln("$key:$value");
     });
 

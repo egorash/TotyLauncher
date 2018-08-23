@@ -1,27 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:toty/models/App.dart';
 
 class AppPicker extends StatefulWidget {
-    final userApps; 
-    final Map<String, String> currentApps;   
-    AppPicker({Key key, @required this.userApps, this.currentApps}) : super(key: key);
+    final allUserApps; 
+    final List<App> currentSelectedApps;   
+    AppPicker({Key key, @required this.allUserApps, this.currentSelectedApps}) : super(key: key);
     @override
     State createState() => new AppPickerState();
 }
 
 class AppPickerState extends State<AppPicker> {
     int current_step = 0;
-    List<DropdownMenuItem<String>> allUserApps = [];
-    Map<String, String> selectedApps = Map<String, String>();
-
-    String getAppName(int index) {
-      return widget.userApps[index].toString();
-    }
+    List<DropdownMenuItem<String>> allUserAppsMenuItems = [];
 
   void loadData() {
-    allUserApps = [];
-    for (var entry in widget.userApps) {      
-      allUserApps.add(new DropdownMenuItem(child: new Text(entry["label"]), value: entry["package"]));
+    allUserAppsMenuItems = [];
+    for (var entry in widget.allUserApps) {      
+      allUserAppsMenuItems.add(new DropdownMenuItem(child: new Text(entry["label"]), value: entry["package"]));
     }
   }
   
@@ -29,21 +25,22 @@ class AppPickerState extends State<AppPicker> {
   Widget build(BuildContext context) {
     loadData();
     List<Step> my_steps = [];
-    selectedApps = widget.currentApps;
+    List<App> SELECTED = [];
     
+    bool hasSelectedApps = SELECTED.length > 0 ? true : false;
+
     for (var idx = 0; idx < 5; idx++) {
       my_steps.add(
         new Step(                  
           title: new Text("App ${idx+1}"),                    
           content: new DropdownButton(
-            value: selectedApps[idx],
-            items:allUserApps,
-            hint: new Text(selectedApps[idx] ?? "Select an App"), 
-            onChanged: (value) {
-              print(value);
-              print(value.runtimeType);              
+            value: hasSelectedApps ? SELECTED[idx].title : null,
+            items:allUserAppsMenuItems,
+            hint: new Text(hasSelectedApps ? SELECTED[idx].title : "Select an App"), 
+            onChanged: (value) {                                             
               setState(() {
-                selectedApps[value] = value;
+                SELECTED.add(App(title: widget.allUserApps[idx]["label"], launcherString: value));
+                widget.currentSelectedApps.add(SELECTED[idx]);               
               });
             }
           ),
