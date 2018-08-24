@@ -7,7 +7,6 @@ class AppListingService {
 
   static getApps() async {
     var apps;
-
       try {
         final data = await _channel.invokeMethod("getApps"); 
         print('Apps $data % .');

@@ -10,5 +10,7 @@ List<App> appActionReducer(List<App> apps, dynamic action) {
 }
 
 List<App> addApp(List<App> apps,AddAppAction action) {
-  return new List.from(apps)[apps.length + 1]..add(action.app);
+  print(apps);
+  print(action.app);
+  return new List.from(apps)..add(action.app);
 }

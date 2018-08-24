@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:launcher_assist/launcher_assist.dart';
-import 'package:toty/redux/store/store_connector.dart';
+import 'package:toty/widgets/app_list.dart';
 import 'package:toty/widgets/app_picker.dart';
 import 'package:toty/widgets/tile.dart';
 import 'package:toty/utils/app_listing_service.dart';
@@ -17,15 +17,15 @@ class TotyLauncherState extends State<TotyLauncher> {
 
     @override
     Widget build(BuildContext context) {
-          return new MaterialApp(
-            theme: ThemeData(
-              brightness: Brightness.dark,
-              primaryColor: Colors.black,
-              accentColor: Colors.white,
-            ),
-            debugShowCheckedModeBanner: false,              
-            home: home(),
-          );
+      return new MaterialApp(
+        theme: ThemeData(
+          brightness: Brightness.dark,
+          primaryColor: Colors.black,
+          accentColor: Colors.white,
+        ),
+        debugShowCheckedModeBanner: false,              
+        home: home(),
+      );
     }
 
     @override
@@ -48,8 +48,9 @@ class TotyLauncherState extends State<TotyLauncher> {
   Widget settingsTiles() {
     var tiles = <Widget>[];
 
-    tiles.add(Tile(
+    tiles.add(Tile(      
       title: show_launcher_settings ? "Save and Exit" : "App Settings", 
+      axis: MainAxisAlignment.end,
       function: () {
         setState(() {
           show_launcher_settings = !show_launcher_settings;    
@@ -57,6 +58,7 @@ class TotyLauncherState extends State<TotyLauncher> {
     }));
     
     tiles.add(Tile(
+      axis: MainAxisAlignment.end,
       title: "Settings", function: () {
       LauncherAssist.launchApp("com.android.settings");
     }));  
@@ -75,7 +77,7 @@ class TotyLauncherState extends State<TotyLauncher> {
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[
-        show_launcher_settings ? AppPicker(allUserApps:allApps, currentSelectedApps: null) : TotyAppsList(),
+        show_launcher_settings ? AppPicker(allUserApps:allApps) : TotyAppsList(),
         settingsTiles()
       ]      
     );

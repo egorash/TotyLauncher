@@ -5,14 +5,16 @@ class Tile extends StatelessWidget {
   final Function function;
   final String title;
   final double scale;
-  const Tile({ Key key, this.title, this.function, this.scale = 1.0 }) : super(key: key);
+  final MainAxisAlignment axis;
+  const Tile({ Key key, this.title, this.function, this.scale = 1.0, this.axis = MainAxisAlignment.start}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return new Row(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: axis,
         children: <Widget>[
         FlatButton(
+          padding: const EdgeInsets.all(8.0),
           onPressed: function,              
           child: Text(
             title, 

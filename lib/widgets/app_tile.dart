@@ -17,10 +17,12 @@ class AppTile extends StatelessWidget{
       },
       builder: (context, callback) {
         return Tile(
-          title: app.title,
-          scale: 2.0,
+          title: app != null ? app.title : "App not found",
+          scale: 2.0,          
           function: () {
-            launchApp(app.launcherString); 
+            if (app != null && app.launcherString != null) {
+              launchApp(app.launcherString); 
+            }
           }
         );
       }
