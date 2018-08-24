@@ -34,16 +34,25 @@ class AppPickerState extends State<AppPicker> {
       converter: (store) {
         return (app) => store.dispatch(AddAppAction(app, this.current_step));
       }, builder: (context, callback) {
+        List<App> appState = StoreProvider.of<List<App>>(context).state;        
         for (var idx = 0; idx < 5; idx++) {
+          String title;
+          
+          if (appState.length > idx) {
+            title = appState[idx].title;
+          } else {
+            title = null;
+          }
+
           my_steps.add(
             new Step(                  
-              title: new Text("App ${idx+1}"),                    
+              title: new Text("App ${idx+1}"),                   
               content: new DropdownButton(
                 items:allUserAppsMenuItems.toList(),
                 value: currentApp != null ? currentApp.title : null,
-                hint: Text("Select an App"), 
+                hint: Text(title != null ? title : "Select an App"), 
                 onChanged: (app) {
-                  App current = app;                                    
+                  App current = App(title:app.title, launcherString: app.launcherString, index: idx);                                                     
                   currentApp = current;                                       
                 }
               ),
@@ -81,7 +90,8 @@ class AppPickerState extends State<AppPicker> {
                 } else {
                   current_step = 0;
                 }
-              });                                          
+              });  
+
               callback(currentApp);
               print("onStepContinue : " + current_step.toString());
             },
