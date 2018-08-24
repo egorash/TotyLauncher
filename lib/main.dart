@@ -25,9 +25,7 @@ class TotyLauncherState extends State<TotyLauncher> {
     ];
 
     var show_launcher_settings = false;
-    var allApps;
-    List<App> currentlySelectedApps = [];
-    var userWallpaper;
+    var allApps;    
 
     @override
     Widget build(BuildContext context) {
@@ -53,14 +51,8 @@ class TotyLauncherState extends State<TotyLauncher> {
           for (var entry in apps.split("\\n")) {
             var mapEntry = entry.split(":");
             var key = mapEntry[0];
-            var value = mapEntry[1];
-            currentlySelectedApps.add(new App(title: key, launcherString: value));
+            var value = mapEntry[1];            
           }
-          setState(() {
-            if (currentlySelectedApps == null || currentlySelectedApps.length < 0) {
-              currentlySelectedApps = fallbackAppList;
-            }
-          });
         });
 
         loadNativeStuff();        
@@ -68,24 +60,16 @@ class TotyLauncherState extends State<TotyLauncher> {
 
     void loadNativeStuff() {
       AppListingService.getApps().then((_appDetails) {
-        print("================================================");
-        print("NATIVE CALLED: $_appDetails");
-        print("================================================");
           setState(() {
               allApps = _appDetails;
-          });
-        });
-        LauncherAssist.getWallpaper().then((_imageData) {
-          setState(() {
-              userWallpaper = _imageData;
           });
         });
     }
 
   Widget appRows() {
     var tiles = <Widget>[];
-    if (currentlySelectedApps != null) {
-      for (var app in currentlySelectedApps) {
+    if (fallbackAppList != null) {
+      for (var app in fallbackAppList) {
         tiles.add(
           Tile(
           title: app.title, 
@@ -118,7 +102,7 @@ class TotyLauncherState extends State<TotyLauncher> {
       function: () {
         setState(() {
           if (show_launcher_settings) {
-            PreferenceLoader().writeAllApps(currentlySelectedApps);
+            // TODO: Write
           }
           show_launcher_settings = !show_launcher_settings;    
         });
@@ -143,7 +127,7 @@ class TotyLauncherState extends State<TotyLauncher> {
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[
-        show_launcher_settings ? AppPicker(allUserApps:allApps, currentSelectedApps: currentlySelectedApps) : appRows(),
+        show_launcher_settings ? AppPicker(allUserApps:allApps, currentSelectedApps: fallbackAppList) : appRows(),
         settingsTiles()
       ]      
     );
