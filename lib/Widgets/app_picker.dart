@@ -12,12 +12,13 @@ class AppPicker extends StatefulWidget {
 
 class AppPickerState extends State<AppPicker> {
     int current_step = 0;
-    List<DropdownMenuItem<String>> allUserAppsMenuItems = [];
+    List<DropdownMenuItem<App>> allUserAppsMenuItems = [];
 
   void loadData() {
     allUserAppsMenuItems = [];
     for (var entry in widget.allUserApps) {      
-      allUserAppsMenuItems.add(new DropdownMenuItem(child: new Text(entry["label"]), value: entry["package"]));
+      App currentApp = App(title:entry["label"], launcherString: entry["package"]);
+      allUserAppsMenuItems.add(new DropdownMenuItem<App>(child: new Text(entry["label"]), value: currentApp));
     }
   }
   
@@ -35,11 +36,11 @@ class AppPickerState extends State<AppPicker> {
           title: new Text("App ${idx+1}"),                    
           content: new DropdownButton(
             value: hasSelectedApps ? SELECTED[idx].title : null,
-            items:allUserAppsMenuItems,
+            items:allUserAppsMenuItems.toList(),
             hint: new Text(hasSelectedApps ? SELECTED[idx].title : "Select an App"), 
-            onChanged: (value) {                                             
+            onChanged: (app) {                                             
               setState(() {
-                SELECTED.add(App(title: widget.allUserApps[idx]["label"], launcherString: value));
+                SELECTED.add(App(title: app.title, launcherString: app.launcherString));
                 widget.currentSelectedApps.add(SELECTED[idx]);               
               });
             }
