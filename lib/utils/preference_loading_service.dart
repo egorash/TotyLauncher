@@ -23,7 +23,8 @@ class PreferenceLoader {
     apps.forEach((entry) {
       var key = entry.title;
       var value = entry.launcherString;
-      sink.writeln("$key:$value");
+      var index = entry.index;
+      sink.writeln("$key:$value->$index");
     });
 
     sink.close();
