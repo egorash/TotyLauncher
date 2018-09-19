@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -28,36 +30,37 @@ class AppPickerState extends State<AppPicker> {
   Widget build(BuildContext context) {   
     loadData(); 
     List<Step> my_steps = [];
-    App currentApp;
 
     return new StoreConnector<List<App>, AppAddedCallback> (
       converter: (store) {
         return (app) => store.dispatch(AddAppAction(app, this.current_step));
       }, builder: (context, callback) {
+        
         List<App> appState = StoreProvider.of<List<App>>(context).state;        
+        print(appState);
         for (var idx = 0; idx < 5; idx++) {
-          String title;
-          
-          if (appState.length > idx) {
-            title = appState[idx].title;
-          } else {
-            title = null;
-          }
-
           my_steps.add(
             new Step(                  
               title: new Text("App ${idx+1}"),                   
               content: new DropdownButton(
                 items:allUserAppsMenuItems.toList(),
-                value: currentApp != null ? currentApp.title : null,
-                hint: Text(title != null ? title : "Select an App"), 
+                value: appState.length > idx && appState[idx] != null ? appState[idx] : allUserAppsMenuItems[idx].value,
+                hint: Text("Select an App"),
                 onChanged: (app) {
-                  App current = App(title:app.title, launcherString: app.launcherString, index: idx);                                                     
-                  currentApp = current;                                       
+                  setState(() {  
+                    appState.insert(
+                      current_step,
+                      App(
+                        title:app.title, 
+                        launcherString: app.launcherString, 
+                        index: idx
+                        )
+                      );
+                  });
                 }
               ),
               isActive: true)
-          );
+          );          
         }
 
         return Column(
@@ -83,7 +86,7 @@ class AppPickerState extends State<AppPicker> {
               });
               print("onStepCancel : " + current_step.toString());
             },
-            onStepContinue: () {
+            onStepContinue: () { 
               setState(() {
                 if (current_step < my_steps.length - 1) {
                   current_step = current_step + 1;
@@ -92,7 +95,6 @@ class AppPickerState extends State<AppPicker> {
                 }
               });  
 
-              callback(currentApp);
               print("onStepContinue : " + current_step.toString());
             },
           ))]
